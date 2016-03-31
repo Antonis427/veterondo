@@ -243,8 +243,6 @@ public class MainActivity extends AppCompatActivity {
                     int id = openCurrentWeather.getWeather().get(0).getId();
                     boolean isNight = Constants.isNight(sunriseEpoch, sunsetEpoch);
 
-                    isNight = false;
-                    id = 800;
 
                     evaluateWeatherObject(isNight, id, Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
 
@@ -470,7 +468,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 condition = "Hot";
-
+                setPaletteFromWeather(WeatherKind.HOT);
 
             }
 
@@ -530,6 +528,13 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
+        if (weatherKind == WeatherKind.HOT) {
+            weatherPalette = WeatherPaletteGenerator.getHotPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getHotPalette();
+
+        }
+
         if (weatherKind == WeatherKind.SPRINGTIME) {
             weatherPalette = WeatherPaletteGenerator.getSpringPalette();
             immediatelyApplyPalette();
@@ -581,6 +586,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     enum WeatherKind {
-        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY, SPRINGTIME;
+        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY, SPRINGTIME, HOT;
     }
 }

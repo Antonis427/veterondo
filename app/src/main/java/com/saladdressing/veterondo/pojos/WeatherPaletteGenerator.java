@@ -10,6 +10,8 @@ public class WeatherPaletteGenerator {
     private static String[] FUNKY_PALETTE = new String[]{"#EF5350", "#E91E63", "#9C27B0", "#673AB7", "#3F51B5", "#2196F3", "#039BE5", "#18FFFF", "#009688", "#00E676", "#76FF03", "#FFEB3B", "#FFC107", "#FF5722"};
     private static String[] DUSTY_PALETTE = new String[]{"#BCAAA4", "#A1887F", "#8D6E63", "#795548", "#6D4C41", "#5D4037", "#4E342E", "#3E2723", "#757575", "#616161", "#424242", "#212121"};
     private static String[] SPRING_PALETTE = new String[] {"#84FFFF","#18FFFF","#00E5FF","#00B8D4","#FFF59D","#FFF176","#CCFF90","#B2FF59","#76FF03","#64DD17","#F4FF81","#EEFF41", "#C6FF00", "#AEEA00"};
+    private static String[] HOT_PALETTE = new String[] {"#FFF176","#FFEE58","#FFEB3B","#FFD54F","#FFCA28","#FFC107","#EF6C00","#E65100","#FF5722","#F4511E","#E53935","#D32F2F"};
+
 
     public WeatherPaletteGenerator() {
 
@@ -18,6 +20,8 @@ public class WeatherPaletteGenerator {
     public static String[] getFunkyPalette() {
         return FUNKY_PALETTE;
     }
+
+    public static String[] getHotPalette() { return HOT_PALETTE; }
 
     public static String[] getSpringPalette() { return SPRING_PALETTE; }
 
