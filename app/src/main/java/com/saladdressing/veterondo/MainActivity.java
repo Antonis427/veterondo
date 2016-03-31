@@ -45,12 +45,14 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+
     private static final Handler handler = new Handler();
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    String condition;
     String[] weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
     GridDotAdapter adapter;
     TextView appTitle;
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         temp = (TextView) findViewById(R.id.temp);
 
         Typeface titleTypeface = Typeface.createFromAsset(getAssets(), "fonts/Ailerons-Typeface.otf");
-        Typeface scriptTypeface = Typeface.createFromAsset(getAssets(), "fonts/Junction-light.otf");
+        Typeface scriptTypeface = Typeface.createFromAsset(getAssets(), "fonts/RobotoSlab-Light.ttf");
 
         SpannableString span = new SpannableString("::::::::veterondo");
         span.setSpan(new ForegroundColorSpan(Color.parseColor("#F44336")), 9, 10, 0);
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 adapter.notifyDataSetChanged();
+                weatherDescription.setText("FUNKY");
 
             }
         });
@@ -133,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                         adapter.notifyDataSetChanged();
+                        weatherDescription.setText(condition);
+
 
                     }
                 });
@@ -199,6 +204,12 @@ public class MainActivity extends AppCompatActivity {
                 latlon.add(location.getLongitude());
 
             }
+
+            if (location == null) {
+                latlon.add(0.0);
+                latlon.add(0.0);
+
+            }
         }
         return latlon;
     }
@@ -229,18 +240,23 @@ public class MainActivity extends AppCompatActivity {
                     long sunriseEpoch = openCurrentWeather.getSys().getSunrise();
                     long sunsetEpoch = openCurrentWeather.getSys().getSunset();
 
-                    if (Constants.isNight(sunriseEpoch, sunsetEpoch)) {
+                    int id = openCurrentWeather.getWeather().get(0).getId();
+                    boolean isNight = Constants.isNight(sunriseEpoch, sunsetEpoch);
 
-                        setPaletteFromWeather(WeatherKind.NIGHTLY);
+                    isNight = false;
+                    id = 800;
 
-                    } else {
+                    evaluateWeatherObject(isNight, id, Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
 
-                       int id = openCurrentWeather.getWeather().get(0).getId();
 
-                    }
+                    double temperature = Math.floor(Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
+                    int intTemp = (int) temperature;
 
+                    weatherDescription.setText(condition);
+                    temp.setText(intTemp + "°C");
 
                 }
+
 
                 @Override
                 public void failure(RetrofitError error) {
@@ -256,6 +272,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     public final String generateRandomColorFromPalette(String[] palette) {
 
         int paletteSize = palette.length;
@@ -266,6 +284,214 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void evaluateWeatherObject(boolean isNight, int id, double celsiusTemp) {
+
+        if (isNight) {
+
+            setPaletteFromWeather(WeatherKind.NIGHTLY);
+            condition = "starry";
+
+        } else {
+
+
+            if (id >= 200 && id < 300) {
+
+                condition = "Stormy";
+                setPaletteFromWeather(WeatherKind.RAINY);
+
+            }
+
+            if (id >= 300 && id < 400) {
+                condition = "Drizzle";
+                setPaletteFromWeather(WeatherKind.RAINY);
+            }
+
+            if (id >= 500 && id < 600) {
+
+                condition = "Rainy";
+                setPaletteFromWeather(WeatherKind.RAINY);
+
+
+            }
+
+            if (id >= 600 && id < 700) {
+
+
+                condition = "Snowy";
+                setPaletteFromWeather(WeatherKind.SNOWY);
+
+            }
+
+            if (id >= 700 && id < 800) {
+
+                if (id == 701) {
+
+
+                    condition = "Misty";
+
+                }
+
+                if (id == 711) {
+
+
+                    condition = "Smoky";
+                    setPaletteFromWeather(WeatherKind.DUSTY);
+
+                }
+
+                if (id == 721) {
+
+
+                    condition = "Hazy";
+
+
+                }
+
+                if (id == 731) {
+
+
+                    condition = "Dusty";
+                    setPaletteFromWeather(WeatherKind.DUSTY);
+
+
+                }
+
+                if (id == 741) {
+
+
+                    condition = "Foggy";
+                    setPaletteFromWeather(WeatherKind.CLOUDY);
+
+
+
+                }
+
+                if (id == 751) {
+
+
+                    condition = "Sandy";
+                    setPaletteFromWeather(WeatherKind.DUSTY);
+
+
+                }
+
+                if (id == 761) {
+
+
+                    condition = "Dusty";
+                    setPaletteFromWeather(WeatherKind.DUSTY);
+
+
+                }
+
+                if (id == 762) {
+
+
+                    condition = "Ash";
+                    setPaletteFromWeather(WeatherKind.CLOUDY);
+
+
+                }
+
+                if (id == 771) {
+
+
+                    condition = "Squalls";
+
+
+                }
+
+                if (id == 781) {
+
+
+                    condition = "Tornado";
+
+                }
+
+            }
+
+            if (id == 800) {
+                condition = "Clear Sky";
+
+                if (isNight) {
+
+                    condition = "starry";
+                    setPaletteFromWeather(WeatherKind.NIGHTLY);
+                } else {
+
+                    condition = "sunny";
+
+                    if (celsiusTemp >= 18) {
+                        setPaletteFromWeather(WeatherKind.SUNNY);
+                    }
+
+                    else {
+                        setPaletteFromWeather(WeatherKind.SPRINGTIME);
+                    }
+
+                }
+
+            }
+
+            if (id > 800 && id < 900) {
+                condition = "Cloudy";
+                setPaletteFromWeather(WeatherKind.CLOUDY);
+
+
+            }
+
+            if (id == 900) {
+
+                condition = "Tornado";
+
+
+            }
+
+            if (id == 901) {
+
+                condition = "Stormy";
+
+
+            }
+
+            if (id == 902) {
+
+                condition = "Hurricane";
+
+            }
+
+            if (id == 903) {
+
+                condition = "Cold";
+
+            }
+
+            if (id == 904) {
+
+
+                condition = "Hot";
+
+
+            }
+
+            if (id == 905) {
+
+
+                condition = "Windy";
+
+            }
+
+            if (id == 906) {
+
+
+                condition = "Icy";
+                setPaletteFromWeather(WeatherKind.SNOWY);
+
+            }
+
+
+        }
+    }
 
     public String[] setPaletteFromWeather(WeatherKind weatherKind) {
 
@@ -298,8 +524,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (weatherKind == WeatherKind.DUSTY) {
-            return null;
+            weatherPalette = WeatherPaletteGenerator.getDustyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getDustyPalette();
 
+        }
+
+        if (weatherKind == WeatherKind.SPRINGTIME) {
+            weatherPalette = WeatherPaletteGenerator.getSpringPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getSpringPalette();
         }
 
         if (weatherKind == WeatherKind.FUNKY) {
@@ -321,7 +555,9 @@ public class MainActivity extends AppCompatActivity {
     public void immediatelyApplyPalette() {
 
         for (Dot dot : dots) {
+
             dot.setColor(generateRandomColorFromPalette(weatherPalette));
+
         }
 
         adapter.notifyDataSetChanged();
@@ -345,6 +581,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     enum WeatherKind {
-        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY;
+        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY, SPRINGTIME;
     }
 }

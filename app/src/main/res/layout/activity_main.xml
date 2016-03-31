@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="48dp"
         android:fontFamily="sans-serif-condensed"
-        android:text="STARRY"
+        android:text=""
         android:textColor="#ffffff"
         android:textSize="40sp" />
 
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="LARNACA"
+        android:text=""
         android:textColor="#ffffff"
         android:textSize="24sp"
 
@@ -77,8 +77,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/location"
-        android:layout_marginTop="40dp"
-        android:text="16°C"
+        android:layout_marginTop="36dp"
+        android:text=""
         android:textColor="#000000"
 
         />

@@ -18,4 +18,15 @@ public class Constants {
 
 
     }
+
+
+    public static double kelvinToCelsius(double kelvinTemp){
+        return kelvinTemp - 273.15;
+    }
+
+
+    public static double kelvinToFarhenheit(double kelvinTemp) {
+        return kelvinTemp * 9/5 - 459.67;
+
+    }
 }
