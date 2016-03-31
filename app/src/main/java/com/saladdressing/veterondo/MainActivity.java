@@ -26,6 +26,7 @@ import com.saladdressing.veterondo.pojos.OpenCurrentWeather;
 import com.saladdressing.veterondo.pojos.WeatherPaletteGenerator;
 import com.saladdressing.veterondo.retrofitinterfaces.GetCurrentWeatherInterface;
 import com.saladdressing.veterondo.utils.Constants;
+import com.saladdressing.veterondo.utils.SamplePlayer;
 
 import android.os.Process;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity {
 
 
+    SamplePlayer samplePlayer;
     private static final Handler handler = new Handler();
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
@@ -77,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
         weatherDescription = (TextView) findViewById(R.id.weather_desc);
         location = (TextView) findViewById(R.id.location);
         temp = (TextView) findViewById(R.id.temp);
+
+        samplePlayer = new SamplePlayer(this);
+        samplePlayer.playSound(R.raw.allegro);
 
         Typeface titleTypeface = Typeface.createFromAsset(getAssets(), "fonts/Ailerons-Typeface.otf");
         Typeface scriptTypeface = Typeface.createFromAsset(getAssets(), "fonts/RobotoSlab-Light.ttf");
