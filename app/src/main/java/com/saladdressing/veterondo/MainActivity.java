@@ -1,21 +1,35 @@
 package com.saladdressing.veterondo;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+
 import com.saladdressing.veterondo.adapters.GridDotAdapter;
 import com.saladdressing.veterondo.pojos.Dot;
+import com.saladdressing.veterondo.pojos.OpenCurrentWeather;
 import com.saladdressing.veterondo.pojos.WeatherPaletteGenerator;
+import com.saladdressing.veterondo.retrofitinterfaces.GetCurrentWeatherInterface;
+import com.saladdressing.veterondo.utils.Constants;
+
 import android.os.Process;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -23,14 +37,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import retrofit.Callback;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private static final Handler handler = new Handler();
+    private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    String[] weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
     GridDotAdapter adapter;
     TextView appTitle;
     TextView weatherDescription;
@@ -39,15 +60,6 @@ public class MainActivity extends AppCompatActivity {
     Runnable myRunnable;
     private Future<?> timingTask;
 
-    public final String generateRandomColorFromPalette(String[] palette) {
-
-        int paletteSize = palette.length;
-
-        Random rand = new Random();
-
-        return palette[rand.nextInt(paletteSize)];
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         makeFullscreen();
         keepScreenOn();
-
+        initializeDots();
 
         appTitle = (TextView) findViewById(R.id.app_name);
         grid = (GridView) findViewById(R.id.dot_grid);
@@ -84,15 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
         appTitle.setText(span);
 
-        for (int i = 0; i < 36; i++) {
-
-            Dot dot = new Dot();
-            dot.setColor(generateRandomColorFromPalette(WeatherPaletteGenerator.getSunnyPalette()));
-            dots.add(dot);
-        }
 
         adapter = new GridDotAdapter(this, dots);
         grid.setAdapter(adapter);
+
+        retrieveWeather();
 
 
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -120,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
 
                         for (Dot dot : dots) {
-                            dot.setColor(generateRandomColorFromPalette(WeatherPaletteGenerator.getCloudyPalette()));
+                            dot.setColor(generateRandomColorFromPalette(weatherPalette));
                         }
 
 
@@ -133,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
         }, 0, 30000, TimeUnit.MILLISECONDS);
 
 
+    }
+
+    private void initializeDots() {
+        for (int i = 0; i < 36; i++) {
+
+            Dot dot = new Dot();
+            dot.setColor(generateRandomColorFromPalette(WeatherPaletteGenerator.getSunnyPalette()));
+            dots.add(dot);
+        }
     }
 
     private void keepScreenOn() {
@@ -160,5 +177,174 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public ArrayList<Double> getLocation() {
 
+        ArrayList<Double> latlon = new ArrayList<>();
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_REQ_CODE);
+
+            return null;
+
+        } else {
+
+            LocationManager locMan = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Location location = locMan.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            if (location != null) {
+
+                latlon.add(location.getLatitude());
+                latlon.add(location.getLongitude());
+
+            }
+        }
+        return latlon;
+    }
+
+    public void retrieveWeather() {
+
+
+        ArrayList<Double> loc = getLocation();
+
+        if (loc != null) {
+
+            double lat = loc.get(0);
+            double lon = loc.get(1);
+
+            RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint("http://api.openweathermap.org/").setLogLevel(RestAdapter.LogLevel.FULL).build();
+            GetCurrentWeatherInterface weatherInterface = restAdapter.create(GetCurrentWeatherInterface.class);
+
+
+            weatherInterface.connect(lat, lon, new Callback<OpenCurrentWeather>() {
+
+                @Override
+                public void success(OpenCurrentWeather openCurrentWeather, Response response) {
+
+
+                    location.setText(openCurrentWeather.getName());
+
+
+                    long sunriseEpoch = openCurrentWeather.getSys().getSunrise();
+                    long sunsetEpoch = openCurrentWeather.getSys().getSunset();
+
+                    if (Constants.isNight(sunriseEpoch, sunsetEpoch)) {
+
+                        setPaletteFromWeather(WeatherKind.NIGHTLY);
+
+                    } else {
+
+                       int id = openCurrentWeather.getWeather().get(0).getId();
+
+                    }
+
+
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+
+        } else {
+
+            Toast.makeText(MainActivity.this, "Couldn't get location! Enjoy the lightshow anyway!", Toast.LENGTH_LONG).show();
+            setPaletteFromWeather(WeatherKind.FUNKY);
+        }
+
+    }
+
+    public final String generateRandomColorFromPalette(String[] palette) {
+
+        int paletteSize = palette.length;
+
+        Random rand = new Random();
+
+        return palette[rand.nextInt(paletteSize)];
+
+    }
+
+
+    public String[] setPaletteFromWeather(WeatherKind weatherKind) {
+
+        if (weatherKind == WeatherKind.CLOUDY) {
+
+            weatherPalette = WeatherPaletteGenerator.getCloudyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getCloudyPalette();
+
+        }
+
+        if (weatherKind == WeatherKind.SUNNY) {
+            weatherPalette = WeatherPaletteGenerator.getSunnyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getSunnyPalette();
+        }
+
+        if (weatherKind == WeatherKind.NIGHTLY) {
+            weatherPalette = WeatherPaletteGenerator.getNightlyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getNightlyPalette();
+
+        }
+
+        if (weatherKind == WeatherKind.RAINY) {
+            weatherPalette = WeatherPaletteGenerator.getRainPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getRainPalette();
+
+        }
+
+        if (weatherKind == WeatherKind.DUSTY) {
+            return null;
+
+        }
+
+        if (weatherKind == WeatherKind.FUNKY) {
+            weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getFunkyPalette();
+        }
+
+        if (weatherKind == WeatherKind.SNOWY) {
+            weatherPalette = WeatherPaletteGenerator.getSnowyPalette();
+            immediatelyApplyPalette();
+            return WeatherPaletteGenerator.getSnowyPalette();
+
+        } else {
+            return null;
+        }
+    }
+
+    public void immediatelyApplyPalette() {
+
+        for (Dot dot : dots) {
+            dot.setColor(generateRandomColorFromPalette(weatherPalette));
+        }
+
+        adapter.notifyDataSetChanged();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == MY_PERMISSION_REQ_CODE) {
+            int grantResult = grantResults[0];
+
+            if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                retrieveWeather();
+            } else {
+
+                Toast.makeText(this, "Bummer! Veterondo can't work without yout location!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    enum WeatherKind {
+        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY;
+    }
 }
