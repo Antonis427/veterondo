@@ -1,6 +1,6 @@
 package com.saladdressing.veterondo.pojos;
 
-import com.saladdressing.veterondo.ColorCallback;
+import com.saladdressing.veterondo.interfaces.ColorCallback;
 
 /**
  * Created by sebas on 3/27/2016.

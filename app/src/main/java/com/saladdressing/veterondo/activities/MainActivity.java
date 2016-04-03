@@ -1,4 +1,4 @@
-package com.saladdressing.veterondo;
+package com.saladdressing.veterondo.activities;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,14 +13,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.saladdressing.veterondo.R;
 import com.saladdressing.veterondo.adapters.GridDotAdapter;
+import com.saladdressing.veterondo.enums.WeatherKind;
+import com.saladdressing.veterondo.generators.MusicMachine;
+import com.saladdressing.veterondo.interfaces.PlaybackListener;
 import com.saladdressing.veterondo.pojos.Dot;
 import com.saladdressing.veterondo.pojos.OpenCurrentWeather;
 import com.saladdressing.veterondo.pojos.WeatherPaletteGenerator;
@@ -47,13 +50,13 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity {
 
 
-    SamplePlayer samplePlayer;
     private static final Handler handler = new Handler();
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    SamplePlayer samplePlayer;
     String condition;
     String[] weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
     GridDotAdapter adapter;
@@ -62,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     TextView location;
     TextView temp;
     Runnable myRunnable;
+    WeatherKind mWeatherKind = WeatherKind.SUNNY;
     private Future<?> timingTask;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
         temp = (TextView) findViewById(R.id.temp);
 
         samplePlayer = new SamplePlayer(this);
-        samplePlayer.playSound(R.raw.allegro);
 
         Typeface titleTypeface = Typeface.createFromAsset(getAssets(), "fonts/Ailerons-Typeface.otf");
         Typeface scriptTypeface = Typeface.createFromAsset(getAssets(), "fonts/RobotoSlab-Light.ttf");
@@ -107,10 +109,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new GridDotAdapter(this, dots);
         grid.setAdapter(adapter);
 
-        retrieveWeather();
-
-
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        final AdapterView.OnItemClickListener dotListener = new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -124,8 +123,32 @@ public class MainActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 weatherDescription.setText("FUNKY");
 
+                MusicMachine musicMachine = new MusicMachine(MainActivity.this, mWeatherKind);
+                musicMachine.playPattern(400, new PlaybackListener() {
+
+
+                    @Override
+                    public void onPlaybackStarted() {
+
+                    }
+
+                    @Override
+                    public void onPlaybackCompleted() {
+
+                    }
+
+
+                });
+
+
             }
-        });
+
+
+        };
+
+        grid.setOnItemClickListener(dotListener);
+
+        retrieveWeather();
 
 
         timingTask = scheduler.scheduleAtFixedRate(new Runnable() {
@@ -276,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     public final String generateRandomColorFromPalette(String[] palette) {
 
         int paletteSize = palette.length;
@@ -292,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
         if (isNight) {
 
             setPaletteFromWeather(WeatherKind.NIGHTLY);
+            mWeatherKind = WeatherKind.NIGHTLY;
             condition = "starry";
 
         } else {
@@ -301,17 +324,23 @@ public class MainActivity extends AppCompatActivity {
 
                 condition = "Stormy";
                 setPaletteFromWeather(WeatherKind.RAINY);
+                mWeatherKind = WeatherKind.RAINY;
+
 
             }
 
             if (id >= 300 && id < 400) {
                 condition = "Drizzle";
+                mWeatherKind = WeatherKind.RAINY;
+
                 setPaletteFromWeather(WeatherKind.RAINY);
             }
 
             if (id >= 500 && id < 600) {
 
                 condition = "Rainy";
+                mWeatherKind = WeatherKind.RAINY;
+
                 setPaletteFromWeather(WeatherKind.RAINY);
 
 
@@ -321,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 condition = "Snowy";
+                mWeatherKind = WeatherKind.SNOWY;
+
                 setPaletteFromWeather(WeatherKind.SNOWY);
 
             }
@@ -331,6 +362,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Misty";
+                    mWeatherKind = WeatherKind.CLOUDY;
+
 
                 }
 
@@ -339,6 +372,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Smoky";
                     setPaletteFromWeather(WeatherKind.DUSTY);
+                    mWeatherKind = WeatherKind.DUSTY;
+
 
                 }
 
@@ -354,6 +389,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Dusty";
+                    mWeatherKind = WeatherKind.DUSTY;
+
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
 
@@ -363,8 +400,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Foggy";
-                    setPaletteFromWeather(WeatherKind.CLOUDY);
+                    mWeatherKind = WeatherKind.CLOUDY;
 
+                    setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
                 }
@@ -373,6 +411,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Sandy";
+                    mWeatherKind = WeatherKind.DUSTY;
+
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
 
@@ -382,6 +422,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Dusty";
+                    mWeatherKind = WeatherKind.DUSTY;
+
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
 
@@ -391,6 +433,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Ash";
+                    mWeatherKind = WeatherKind.CLOUDY;
+
                     setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
@@ -419,16 +463,19 @@ public class MainActivity extends AppCompatActivity {
                 if (isNight) {
 
                     condition = "starry";
+                    mWeatherKind = WeatherKind.NIGHTLY;
+
                     setPaletteFromWeather(WeatherKind.NIGHTLY);
                 } else {
 
                     condition = "sunny";
 
                     if (celsiusTemp >= 18) {
-                        setPaletteFromWeather(WeatherKind.SUNNY);
-                    }
+                        mWeatherKind = WeatherKind.SUNNY;
 
-                    else {
+                        setPaletteFromWeather(WeatherKind.SUNNY);
+                    } else {
+                        mWeatherKind = WeatherKind.SUNNY;
                         setPaletteFromWeather(WeatherKind.SPRINGTIME);
                     }
 
@@ -438,6 +485,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (id > 800 && id < 900) {
                 condition = "Cloudy";
+                mWeatherKind = WeatherKind.CLOUDY;
+
                 setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
@@ -488,6 +537,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 condition = "Icy";
+                mWeatherKind = WeatherKind.SNOWY;
+
                 setPaletteFromWeather(WeatherKind.SNOWY);
 
             }
@@ -590,7 +641,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    enum WeatherKind {
-        CLOUDY, SNOWY, SUNNY, RAINY, DUSTY, NIGHTLY, FUNKY, SPRINGTIME, HOT;
-    }
+
 }

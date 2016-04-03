@@ -1,4 +1,4 @@
-package com.saladdressing.veterondo.utils;
+package com.saladdressing.veterondo.generators;
 
 
 import retrofit.RestAdapter;
