@@ -1,7 +1,10 @@
 package com.saladdressing.veterondo.activities;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -56,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    AlarmManager alarmManager;
     SamplePlayer samplePlayer;
     String condition;
     String[] weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
@@ -639,6 +643,20 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Bummer! Veterondo can't work without yout location!", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public void startRegularUpdates() {
+
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, 0);
+
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 0, 10*60*1000, pendingIntent);
+
     }
 
 
