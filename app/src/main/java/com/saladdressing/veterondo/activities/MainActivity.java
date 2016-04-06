@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
     AlarmManager alarmManager;
+    PendingIntent pendingIntent;
     SamplePlayer samplePlayer;
     String condition;
     String[] weatherPalette = WeatherPaletteGenerator.getFunkyPalette();
@@ -76,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (dots != null && dots.size() > 0) {
+            dots.clear();
+
+        }
 
         makeFullscreen();
         keepScreenOn();
@@ -177,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 30000, TimeUnit.MILLISECONDS);
 
+        startRegularUpdates();
+
 
     }
 
@@ -204,13 +212,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         handler.removeCallbacks(myRunnable);
+        if (alarmManager != null && pendingIntent != null)
+            alarmManager.cancel(pendingIntent);
+        overridePendingTransition(0,0);
+
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Process.killProcess(android.os.Process.myPid());
+        //Process.killProcess(android.os.Process.myPid());
 
     }
 
@@ -649,13 +661,17 @@ public class MainActivity extends AppCompatActivity {
 
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
+
         Intent intent = new Intent(this, MainActivity.class);
+
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, 0);
+        overridePendingTransition(0,0);
 
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, 0, 10*60*1000, pendingIntent);
+        pendingIntent = PendingIntent.getActivity(this, 1, intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 60 * 1000, pendingIntent);
 
     }
 
