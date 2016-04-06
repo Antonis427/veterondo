@@ -53,6 +53,8 @@ import retrofit.client.Response;
 public class MainActivity extends AppCompatActivity {
 
 
+    public static final int REFRESH_PENDING_INTENT_REQUEST_CODE = 1;
+    public static final long TIME_TO_REFRESH = 10 * 60 * 1000;
     private static final Handler handler = new Handler();
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
@@ -670,8 +672,8 @@ public class MainActivity extends AppCompatActivity {
 
         overridePendingTransition(0,0);
 
-        pendingIntent = PendingIntent.getActivity(this, 1, intent, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10 * 60 * 1000, pendingIntent);
+        pendingIntent = PendingIntent.getActivity(this, REFRESH_PENDING_INTENT_REQUEST_CODE , intent, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + TIME_TO_REFRESH, pendingIntent);
 
     }
 
