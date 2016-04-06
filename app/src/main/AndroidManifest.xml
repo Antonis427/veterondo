@@ -21,9 +21,8 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name=".activities.IconShowcaseActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_icon_showcase"
             android:theme="@style/FullscreenTheme"></activity>
     </application>
 

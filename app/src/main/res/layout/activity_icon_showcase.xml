@@ -5,5 +5,19 @@
     android:background="#000000"
     tools:context="com.saladdressing.veterondo.activities.IconShowcaseActivity">
 
+    <ImageView
+        android:id="@+id/showcased_icon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_centerInParent="true"
+
+        />
+
+    <TextView
+        android:id="@+id/weather_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/showcased_icon" />
+
 
 </RelativeLayout>
