@@ -6,12 +6,17 @@ import android.content.SharedPreferences;
 
 public class SPS {
 
-    SharedPreferences sharedPrefs;
-    SharedPreferences.Editor editor;
     public static final String FILENAME = "veterondoPrefs";
     public static final int MODE = Context.MODE_PRIVATE;
+    SharedPreferences sharedPrefs;
+    SharedPreferences.Editor editor;
     Context context;
 
+    /**
+     * SPS is a SharedPreferences wrapper for less boilerplate
+     *
+     * @param context
+     */
     public SPS(Context context) {
 
         this.context = context;
@@ -29,9 +34,6 @@ public class SPS {
     public SharedPreferences.Editor getEditor() {
         return editor;
     }
-
-
-
 
 
 }
