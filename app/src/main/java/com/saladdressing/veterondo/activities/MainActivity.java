@@ -32,6 +32,7 @@ import com.saladdressing.veterondo.pojos.OpenCurrentWeather;
 import com.saladdressing.veterondo.pojos.WeatherPaletteGenerator;
 import com.saladdressing.veterondo.retrofitinterfaces.GetCurrentWeatherInterface;
 import com.saladdressing.veterondo.utils.Constants;
+import com.saladdressing.veterondo.utils.SPS;
 import com.saladdressing.veterondo.utils.SamplePlayer;
 
 import android.os.Process;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     TextView temp;
     Runnable myRunnable;
     WeatherKind mWeatherKind = WeatherKind.SUNNY;
+    SPS sps = new SPS(this);
     private Future<?> timingTask;
 
     @Override
@@ -80,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         if (dots != null && dots.size() > 0) {
             dots.clear();
-
         }
 
         makeFullscreen();
@@ -216,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         handler.removeCallbacks(myRunnable);
         if (alarmManager != null && pendingIntent != null)
             alarmManager.cancel(pendingIntent);
-        overridePendingTransition(0,0);
+        overridePendingTransition(0, 0);
 
         super.onPause();
     }
@@ -670,9 +672,9 @@ public class MainActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 
-        overridePendingTransition(0,0);
+        overridePendingTransition(0, 0);
 
-        pendingIntent = PendingIntent.getActivity(this, REFRESH_PENDING_INTENT_REQUEST_CODE , intent, 0);
+        pendingIntent = PendingIntent.getActivity(this, REFRESH_PENDING_INTENT_REQUEST_CODE, intent, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + TIME_TO_REFRESH, pendingIntent);
 
     }
