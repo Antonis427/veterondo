@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
@@ -72,8 +73,19 @@ public class GridDotAdapter extends BaseAdapter {
         if (randTime < 2000) {
             dotPulseAnimator2(dot, 100, 200, randTime);
         }
+
+       // windAnimator(dot);
+       // rainAnimator(dot);
         return v;
 
+    }
+
+    public void rainAnimator(final ImageView iv) {
+        handler.post(new MyRunnableThree(iv));
+    }
+
+    public void windAnimator(final ImageView iv) {
+        handler.post(new MyRunnableFour(iv));
     }
 
     public void dotPulseAnimator(final ImageView iv, final long expansion, final long contraction, final long pause) {
@@ -181,7 +193,91 @@ public class GridDotAdapter extends BaseAdapter {
         }
     }
 
+    private static final class MyRunnableThree implements Runnable {
 
+        final ImageView iv;
+
+
+        public MyRunnableThree(final ImageView iv) {
+            this.iv = iv;
+
+        }
+
+        public void run() {
+
+            Random random = new Random();
+            iv.animate().setDuration(400).alpha(0.0f).setStartDelay(random.nextInt(4000)).scaleY(1.7f).translationY(100).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    iv.animate().setDuration(0).translationY(0).alpha(1.0f).scaleY(1.0f).setListener(null).start();
+                    iv.clearAnimation();
+
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            }).start();
+
+            handler.postDelayed(this, 4000);
+
+        }
+    }
+
+    private static final class MyRunnableFour implements Runnable {
+
+        final ImageView iv;
+
+
+        public MyRunnableFour(final ImageView iv) {
+            this.iv = iv;
+
+        }
+
+        public void run() {
+
+            Random random = new Random();
+            iv.animate().setDuration(900).alpha(0.0f).setStartDelay(random.nextInt(800)).scaleY(1.0f).translationX(100).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    iv.animate().setDuration(0).alpha(1.0f).translationX(0).scaleY(1.0f).setListener(null).start();
+                    iv.clearAnimation();
+
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+            }).start();
+
+            handler.postDelayed(this, 2000);
+
+        }
+    }
 
 
 }

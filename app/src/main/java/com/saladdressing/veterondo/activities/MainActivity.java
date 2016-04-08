@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.saladdressing.veterondo.R;
 import com.saladdressing.veterondo.adapters.GridDotAdapter;
 import com.saladdressing.veterondo.enums.WeatherKind;
+import com.saladdressing.veterondo.generators.DotsShapeGenerator;
 import com.saladdressing.veterondo.generators.MusicMachine;
 import com.saladdressing.veterondo.interfaces.PlaybackListener;
 import com.saladdressing.veterondo.pojos.Dot;
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
     TextView temp;
     Runnable myRunnable;
     WeatherKind mWeatherKind = WeatherKind.SUNNY;
-    SPS sps = new SPS(this);
     private Future<?> timingTask;
 
     @Override
@@ -133,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
                     dot.setColor(generateRandomColorFromPalette(WeatherPaletteGenerator.getFunkyPalette()));
                 }
 
+                /*
+                for (int i=0; i< DotsShapeGenerator.returnSunShape().length; i++) {
+                    dots.get(i).setColor(DotsShapeGenerator.returnSunShape()[i]);
+                }
+
+                */
 
                 adapter.notifyDataSetChanged();
                 weatherDescription.setText("FUNKY");
