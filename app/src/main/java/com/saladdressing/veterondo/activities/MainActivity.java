@@ -75,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
     TextView temp;
     Runnable myRunnable;
     WeatherKind mWeatherKind = WeatherKind.SUNNY;
+    double windSpeed = 0.0;
+    boolean isWindy;
+    boolean isRainy;
     private Future<?> timingTask;
+    SPS sps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         keepScreenOn();
         initializeDots();
 
+        sps = new SPS(this);
         appTitle = (TextView) findViewById(R.id.app_name);
         grid = (GridView) findViewById(R.id.dot_grid);
         weatherDescription = (TextView) findViewById(R.id.weather_desc);
@@ -298,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                     boolean isNight = Constants.isNight(sunriseEpoch, sunsetEpoch);
 
 
-                    evaluateWeatherObject(isNight, id, Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
+                    evaluateWeatherObject(isNight, id, Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()), windSpeed);
 
 
                     double temperature = Math.floor(Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
@@ -335,7 +340,29 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void evaluateWeatherObject(boolean isNight, int id, double celsiusTemp) {
+    private void evaluateWeatherObject(boolean isNight, int id, double celsiusTemp, double windSpeed) {
+
+        sps.getEditor().putBoolean(Constants.IS_WINDY, false).apply();
+        sps.getEditor().putBoolean(Constants.IS_RAINY, false).apply();
+
+
+        isWindy = false;
+        isRainy = false;
+
+        if (windSpeed > 10.0) {
+
+            isWindy = true;
+            sps.getEditor().putBoolean(Constants.IS_WINDY, true).apply();
+
+        }
+
+        else {
+            isWindy = false;
+            sps.getEditor().putBoolean(Constants.IS_WINDY, false).apply();
+        }
+
+
+
 
         if (isNight) {
 
@@ -351,6 +378,7 @@ public class MainActivity extends AppCompatActivity {
                 condition = "Stormy";
                 setPaletteFromWeather(WeatherKind.RAINY);
                 mWeatherKind = WeatherKind.RAINY;
+                sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
 
 
             }
@@ -360,6 +388,9 @@ public class MainActivity extends AppCompatActivity {
                 mWeatherKind = WeatherKind.RAINY;
 
                 setPaletteFromWeather(WeatherKind.RAINY);
+                sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
+
+
             }
 
             if (id >= 500 && id < 600) {
@@ -368,6 +399,8 @@ public class MainActivity extends AppCompatActivity {
                 mWeatherKind = WeatherKind.RAINY;
 
                 setPaletteFromWeather(WeatherKind.RAINY);
+                sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
+
 
 
             }
@@ -556,6 +589,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 condition = "Windy";
+                isWindy = true;
+                sps.getEditor().putBoolean(Constants.IS_WINDY, true).apply();
 
             }
 

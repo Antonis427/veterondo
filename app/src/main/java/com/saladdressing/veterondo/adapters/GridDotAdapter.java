@@ -12,7 +12,9 @@ import android.widget.ImageView;
 
 import com.saladdressing.veterondo.R;
 import com.saladdressing.veterondo.pojos.Dot;
+import com.saladdressing.veterondo.utils.Constants;
 import com.saladdressing.veterondo.utils.DrawableTinter;
+import com.saladdressing.veterondo.utils.SPS;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -26,6 +28,7 @@ public class GridDotAdapter extends BaseAdapter {
     Context mContext;
     DrawableTinter tinter = new DrawableTinter();
     Random rand = new Random();
+    SPS sps;
 
     LayoutInflater inflater;
 
@@ -33,7 +36,7 @@ public class GridDotAdapter extends BaseAdapter {
         mContext = context;
         mDots = dots;
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        sps = new SPS(mContext);
     }
 
 
@@ -63,19 +66,24 @@ public class GridDotAdapter extends BaseAdapter {
         dot.setImageDrawable(tinter.setDrawableColor(mContext, dot, mDots.get(position).getColor()));
 
 
-        long randTime = rand.nextInt(5000);
+        if (sps.getPrefs().getBoolean(Constants.IS_RAINY, false)) {
+            rainAnimator(dot);
+        } else if (sps.getPrefs().getBoolean(Constants.IS_WINDY, false)) {
+            windAnimator(dot);
+        } else {
+            long randTime = rand.nextInt(5000);
 
 
-        if (randTime > 2000) {
-            dotPulseAnimator(dot, 300, 200, randTime);
+            if (randTime > 2000) {
+                dotPulseAnimator(dot, 300, 200, randTime);
+            }
+
+            if (randTime < 2000) {
+                dotPulseAnimator2(dot, 100, 200, randTime);
+            }
         }
 
-        if (randTime < 2000) {
-            dotPulseAnimator2(dot, 100, 200, randTime);
-        }
 
-       // windAnimator(dot);
-       // rainAnimator(dot);
         return v;
 
     }
