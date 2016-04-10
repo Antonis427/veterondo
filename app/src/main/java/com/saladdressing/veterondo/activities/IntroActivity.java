@@ -54,6 +54,8 @@ public class IntroActivity extends AppCompatActivity {
             @Override
             public void run() {
 
+
+                sps.getEditor().putBoolean(Constants.INTRO_PLAYED, true).apply();
                 isActivityPendingLaunch = true;
                 Intent intent = new Intent(IntroActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

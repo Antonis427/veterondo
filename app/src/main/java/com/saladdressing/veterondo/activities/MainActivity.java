@@ -86,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sps = new SPS(this);
+        if (!sps.getPrefs().getBoolean(Constants.INTRO_PLAYED, false)) {
+            Intent intent = new Intent(this, IntroActivity.class);
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+
+        }
+
         setContentView(R.layout.activity_main);
 
         fromIntro = getIntent().getBooleanExtra(Constants.FROM_INTRO, false);
@@ -98,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
         keepScreenOn();
         initializeDots();
 
-        sps = new SPS(this);
         wraps = (ImageView) findViewById(R.id.wraps);
         appTitle = (TextView) findViewById(R.id.app_name);
         grid = (GridView) findViewById(R.id.dot_grid);
@@ -349,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
 
-            Toast.makeText(MainActivity.this, "Couldn't get location! Enjoy the lightshow anyway!", Toast.LENGTH_LONG).show();
+           // Toast.makeText(MainActivity.this, "Couldn't get location! Enjoy the lightshow anyway!", Toast.LENGTH_LONG).show();
             setPaletteFromWeather(WeatherKind.FUNKY);
         }
 
@@ -728,7 +741,7 @@ public class MainActivity extends AppCompatActivity {
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, IconShowcaseActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

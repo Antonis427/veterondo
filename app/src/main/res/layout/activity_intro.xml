@@ -28,6 +28,8 @@
         android:textSize="18sp" />
 
     <ImageView
+        android:soundEffectsEnabled="false"
+
         android:scaleY="0.5"
         android:scaleX="0.5"
         android:id="@+id/center_dot"
@@ -38,6 +40,8 @@
         android:visibility="gone" />
 
     <ImageView
+        android:soundEffectsEnabled="false"
+
         android:scaleY="0.5"
         android:scaleX="0.5"
         android:id="@+id/left_dot"
@@ -51,6 +55,8 @@
         android:visibility="gone" />
 
     <ImageView
+        android:soundEffectsEnabled="false"
+
         android:scaleY="0.5"
         android:scaleX="0.5"
         android:id="@+id/right_dot"
