@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.saladdressing.veterondo.R;
@@ -54,7 +55,6 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-
     public static final int REFRESH_PENDING_INTENT_REQUEST_CODE = 1;
     public static final long TIME_TO_REFRESH = 10 * 60 * 1000;
     private static final Handler handler = new Handler();
@@ -63,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    boolean fromIntro;
+    ImageView wraps;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
     SamplePlayer samplePlayer;
@@ -78,14 +80,15 @@ public class MainActivity extends AppCompatActivity {
     double windSpeed = 0.0;
     boolean isWindy;
     boolean isRainy;
-    private Future<?> timingTask;
     SPS sps;
+    private Future<?> timingTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        fromIntro = getIntent().getBooleanExtra(Constants.FROM_INTRO, false);
 
         if (dots != null && dots.size() > 0) {
             dots.clear();
@@ -96,11 +99,31 @@ public class MainActivity extends AppCompatActivity {
         initializeDots();
 
         sps = new SPS(this);
+        wraps = (ImageView) findViewById(R.id.wraps);
         appTitle = (TextView) findViewById(R.id.app_name);
         grid = (GridView) findViewById(R.id.dot_grid);
         weatherDescription = (TextView) findViewById(R.id.weather_desc);
         location = (TextView) findViewById(R.id.location);
         temp = (TextView) findViewById(R.id.temp);
+
+        float scaleFactor = getResources().getDisplayMetrics().heightPixels / 40 * 2;
+
+        if (sps.getPrefs().getString(Constants.DOT_CHOSEN_INTRO, "").equalsIgnoreCase("Y")) {
+            wraps.setImageResource(R.drawable.circle_yellow);
+
+        }
+
+        if (sps.getPrefs().getString(Constants.DOT_CHOSEN_INTRO, "").equalsIgnoreCase("B")) {
+            wraps.setImageResource(R.drawable.circle_blue);
+        }
+
+        if (sps.getPrefs().getString(Constants.DOT_CHOSEN_INTRO, "").equalsIgnoreCase("P")) {
+            wraps.setImageResource(R.drawable.layout);
+        }
+
+        if (fromIntro)
+            wraps.setVisibility(View.VISIBLE);
+        wraps.animate().setDuration(0).scaleX(scaleFactor).scaleY(scaleFactor).start();
 
         samplePlayer = new SamplePlayer(this);
 
@@ -220,7 +243,9 @@ public class MainActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
 
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
@@ -293,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
                 public void success(OpenCurrentWeather openCurrentWeather, Response response) {
 
 
+                    wraps.animate().setDuration(500).scaleX(0.0f).scaleY(0.0f).start();
                     location.setText(openCurrentWeather.getName());
 
 
@@ -354,14 +380,10 @@ public class MainActivity extends AppCompatActivity {
             isWindy = true;
             sps.getEditor().putBoolean(Constants.IS_WINDY, true).apply();
 
-        }
-
-        else {
+        } else {
             isWindy = false;
             sps.getEditor().putBoolean(Constants.IS_WINDY, false).apply();
         }
-
-
 
 
         if (isNight) {
@@ -400,7 +422,6 @@ public class MainActivity extends AppCompatActivity {
 
                 setPaletteFromWeather(WeatherKind.RAINY);
                 sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
-
 
 
             }

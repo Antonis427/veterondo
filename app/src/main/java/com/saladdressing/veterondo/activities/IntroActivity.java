@@ -21,6 +21,8 @@ import com.saladdressing.veterondo.R;
 import com.saladdressing.veterondo.enums.WeatherKind;
 import com.saladdressing.veterondo.generators.MusicMachine;
 import com.saladdressing.veterondo.pojos.Weather;
+import com.saladdressing.veterondo.utils.Constants;
+import com.saladdressing.veterondo.utils.SPS;
 
 public class IntroActivity extends AppCompatActivity {
 
@@ -33,11 +35,17 @@ public class IntroActivity extends AppCompatActivity {
     TextView instructions;
     View indicator;
     boolean isActivityPendingLaunch;
+    int screenHeight;
+    SPS sps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        sps = new SPS(this);
+
+        screenHeight = getResources().getDisplayMetrics().heightPixels;
 
         MusicMachine musicMachine = new MusicMachine(this, WeatherKind.SUNNY);
         musicMachine.playPattern(200);
@@ -51,6 +59,7 @@ public class IntroActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                intent.putExtra(Constants.FROM_INTRO, true);
                 startActivity(intent);
                 overridePendingTransition(0,0);
 
@@ -72,8 +81,23 @@ public class IntroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                sps.getEditor().putString(Constants.DOT_CHOSEN_INTRO, "Y").apply();
+
+                int dotSize = centerDot.getHeight();
+
+                float scaleFactor = screenHeight / dotSize * 2;
+
+                centerDot.animate().setStartDelay(1200).setDuration(800).scaleX(scaleFactor).scaleY(scaleFactor).start();
+
+                leftDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                rightDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                indicator.animate().setStartDelay(0).scaleY(0.0f).setDuration(500).start();
+                instructions.animate().setStartDelay(0).translationY(screenHeight).setDuration(500).start();
+
                 MusicMachine musicMachine = new MusicMachine(IntroActivity.this, WeatherKind.SUNNY);
                 musicMachine.playPattern(200);
+
+
 
                 handler.postDelayed(launchMainActivityRunnable, 2000);
 
@@ -85,8 +109,25 @@ public class IntroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                sps.getEditor().putString(Constants.DOT_CHOSEN_INTRO, "p").apply();
+
+                int dotSize = centerDot.getHeight();
+
+                float scaleFactor = screenHeight / dotSize * 2;
+
+                leftDot.animate().setStartDelay(1200).setDuration(800).scaleX(scaleFactor).scaleY(scaleFactor).start();
+
+
+                centerDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                rightDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                indicator.animate().setStartDelay(0).scaleY(0.0f).setDuration(500).start();
+                instructions.animate().setStartDelay(0).translationY(screenHeight).setDuration(500).start();
+
                 MusicMachine musicMachine = new MusicMachine(IntroActivity.this, WeatherKind.CLOUDY);
                 musicMachine.playPattern(200);
+
+
+
                 handler.postDelayed(launchMainActivityRunnable, 2000);
 
             }
@@ -96,8 +137,26 @@ public class IntroActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                sps.getEditor().putString(Constants.DOT_CHOSEN_INTRO, "B").apply();
+
+
+                int dotSize = centerDot.getHeight();
+
+                float scaleFactor = screenHeight / dotSize * 2;
+
+                rightDot.animate().setStartDelay(1200).setDuration(800).scaleX(scaleFactor).scaleY(scaleFactor).start();
+
+
+                leftDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                centerDot.animate().scaleX(0.0f).setStartDelay(0).scaleY(0.0f).setDuration(1200).start();
+                indicator.animate().setStartDelay(0).scaleY(0.0f).setDuration(500).start();
+                instructions.animate().setStartDelay(0).translationY(screenHeight).setDuration(500).start();
+
                 MusicMachine musicMachine = new MusicMachine(IntroActivity.this, WeatherKind.RAINY);
                 musicMachine.playPattern(400);
+
+
+
                 handler.postDelayed(launchMainActivityRunnable, 2000);
 
 
@@ -105,7 +164,6 @@ public class IntroActivity extends AppCompatActivity {
         });
 
 
-        int screenHeight = getResources().getDisplayMetrics().heightPixels;
         circle.animate().setListener(null).translationY(-screenHeight).setDuration(0).start();
         centerDot.animate().setListener(null).translationY(-screenHeight).setDuration(0).start();
         leftDot.animate().setListener(null).translationY(-screenHeight).setDuration(0).start();
@@ -157,7 +215,9 @@ public class IntroActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
 
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
     }
 
