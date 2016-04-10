@@ -8,8 +8,8 @@ android {
         applicationId "com.saladdressing.veterondo"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.11"
+        versionCode 4
+        versionName "1.2"
     }
     buildTypes {
         release {
@@ -25,4 +25,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:design:23.1.1'
 }
