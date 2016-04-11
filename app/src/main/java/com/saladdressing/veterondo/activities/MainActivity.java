@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -55,14 +56,15 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int REFRESH_PENDING_INTENT_REQUEST_CODE = 1;
-    public static final long TIME_TO_REFRESH = 10 * 60 * 1000;
+    public static final long TIME_TO_REFRESH = 5 * 60 * 1000;
     private static final Handler handler = new Handler();
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    int iconToSendToShowcaseActivity = R.drawable.cloud_refresh;
+    String descriptionToSendToShowcaseActivity = "nothing to see here";
     boolean fromIntro;
     ImageView wraps;
     AlarmManager alarmManager;
@@ -234,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 0, 30000, TimeUnit.MILLISECONDS);
 
-        startRegularUpdates();
 
 
     }
@@ -275,7 +276,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //Process.killProcess(android.os.Process.myPid());
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        Process.killProcess(android.os.Process.myPid());
 
     }
 
@@ -351,6 +358,8 @@ public class MainActivity extends AppCompatActivity {
                     weatherDescription.setText(condition);
                     temp.setText(intTemp + "°C");
 
+                    scheduleShowcaseActivityLaunch();
+
                 }
 
 
@@ -362,10 +371,20 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
 
-           // Toast.makeText(MainActivity.this, "Couldn't get location! Enjoy the lightshow anyway!", Toast.LENGTH_LONG).show();
             setPaletteFromWeather(WeatherKind.FUNKY);
         }
 
+    }
+
+    private void scheduleShowcaseActivityLaunch() {
+        Handler handler = new Handler();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startActivity(returnShowcaseIntent());
+            }
+        }, TIME_TO_REFRESH);
     }
 
 
@@ -404,6 +423,8 @@ public class MainActivity extends AppCompatActivity {
             setPaletteFromWeather(WeatherKind.NIGHTLY);
             mWeatherKind = WeatherKind.NIGHTLY;
             condition = "starry";
+            iconToSendToShowcaseActivity = Constants.MOON_ICON;
+            descriptionToSendToShowcaseActivity = "starry";
 
         } else {
 
@@ -414,6 +435,8 @@ public class MainActivity extends AppCompatActivity {
                 setPaletteFromWeather(WeatherKind.RAINY);
                 mWeatherKind = WeatherKind.RAINY;
                 sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
+                iconToSendToShowcaseActivity = Constants.CLOUD_LIGHTNING_ICON;
+                descriptionToSendToShowcaseActivity = "stormy";
 
 
             }
@@ -424,6 +447,8 @@ public class MainActivity extends AppCompatActivity {
 
                 setPaletteFromWeather(WeatherKind.RAINY);
                 sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
+                iconToSendToShowcaseActivity = Constants.DRIZZLE_ICON;
+                descriptionToSendToShowcaseActivity = "drizzle";
 
 
             }
@@ -434,6 +459,8 @@ public class MainActivity extends AppCompatActivity {
                 mWeatherKind = WeatherKind.RAINY;
 
                 setPaletteFromWeather(WeatherKind.RAINY);
+                iconToSendToShowcaseActivity = Constants.RAIN_ICON;
+                descriptionToSendToShowcaseActivity = "rainy";
                 sps.getEditor().putBoolean(Constants.IS_RAINY, true).apply();
 
 
@@ -444,6 +471,8 @@ public class MainActivity extends AppCompatActivity {
 
                 condition = "Snowy";
                 mWeatherKind = WeatherKind.SNOWY;
+                iconToSendToShowcaseActivity = Constants.CLOUD_SNOW_ICON;
+                descriptionToSendToShowcaseActivity = "snowy";
 
                 setPaletteFromWeather(WeatherKind.SNOWY);
 
@@ -456,6 +485,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Misty";
                     mWeatherKind = WeatherKind.CLOUDY;
+                    descriptionToSendToShowcaseActivity = "misty";
+                    iconToSendToShowcaseActivity = Constants.FOG_ICON;
 
 
                 }
@@ -466,6 +497,8 @@ public class MainActivity extends AppCompatActivity {
                     condition = "Smoky";
                     setPaletteFromWeather(WeatherKind.DUSTY);
                     mWeatherKind = WeatherKind.DUSTY;
+                    descriptionToSendToShowcaseActivity = "smoke";
+                    iconToSendToShowcaseActivity = Constants.CLOUD_ICON;
 
 
                 }
@@ -474,6 +507,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Hazy";
+                    descriptionToSendToShowcaseActivity = "hazy";
+                    iconToSendToShowcaseActivity = Constants.FOG_ICON;
 
 
                 }
@@ -483,6 +518,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Dusty";
                     mWeatherKind = WeatherKind.DUSTY;
+                    descriptionToSendToShowcaseActivity = "dusty";
+                    iconToSendToShowcaseActivity = Constants.CLOUD_ICON;
 
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
@@ -494,6 +531,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Foggy";
                     mWeatherKind = WeatherKind.CLOUDY;
+                    iconToSendToShowcaseActivity = Constants.FOG_ICON;
+                    descriptionToSendToShowcaseActivity = "foggy";
 
                     setPaletteFromWeather(WeatherKind.CLOUDY);
 
@@ -506,6 +545,8 @@ public class MainActivity extends AppCompatActivity {
                     condition = "Sandy";
                     mWeatherKind = WeatherKind.DUSTY;
 
+                    iconToSendToShowcaseActivity = Constants.FOG_ICON;
+                    descriptionToSendToShowcaseActivity = "sandy";
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
 
@@ -516,6 +557,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Dusty";
                     mWeatherKind = WeatherKind.DUSTY;
+                    iconToSendToShowcaseActivity = Constants.FOG_ICON;
+                    descriptionToSendToShowcaseActivity = "dusty";
 
                     setPaletteFromWeather(WeatherKind.DUSTY);
 
@@ -527,6 +570,8 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "Ash";
                     mWeatherKind = WeatherKind.CLOUDY;
+                    descriptionToSendToShowcaseActivity = "ash";
+                    iconToSendToShowcaseActivity = Constants.CLOUD_ICON;
 
                     setPaletteFromWeather(WeatherKind.CLOUDY);
 
@@ -537,6 +582,11 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Squalls";
+                    descriptionToSendToShowcaseActivity = "squalls";
+                    iconToSendToShowcaseActivity = Constants.WIND_ICON;
+                    sps.getEditor().putBoolean(Constants.IS_WINDY, true).apply();
+
+                    setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
                 }
@@ -545,6 +595,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                     condition = "Tornado";
+                    descriptionToSendToShowcaseActivity = "tornado";
+                    iconToSendToShowcaseActivity = Constants.TORNADO_ICON;
 
                 }
 
@@ -557,11 +609,14 @@ public class MainActivity extends AppCompatActivity {
 
                     condition = "starry";
                     mWeatherKind = WeatherKind.NIGHTLY;
-
+                    descriptionToSendToShowcaseActivity = "starry";
+                    iconToSendToShowcaseActivity = Constants.MOON_ICON;
                     setPaletteFromWeather(WeatherKind.NIGHTLY);
                 } else {
 
                     condition = "sunny";
+                    descriptionToSendToShowcaseActivity = "sunny";
+                    iconToSendToShowcaseActivity = Constants.SUN_ICON;
 
                     if (celsiusTemp >= 18) {
                         mWeatherKind = WeatherKind.SUNNY;
@@ -579,7 +634,8 @@ public class MainActivity extends AppCompatActivity {
             if (id > 800 && id < 900) {
                 condition = "Cloudy";
                 mWeatherKind = WeatherKind.CLOUDY;
-
+                descriptionToSendToShowcaseActivity = "cloudy";
+                iconToSendToShowcaseActivity = Constants.CLOUD_ICON;
                 setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
@@ -588,6 +644,9 @@ public class MainActivity extends AppCompatActivity {
             if (id == 900) {
 
                 condition = "Tornado";
+                iconToSendToShowcaseActivity = Constants.TORNADO_ICON;
+                descriptionToSendToShowcaseActivity = "tornado";
+                setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
             }
@@ -595,6 +654,9 @@ public class MainActivity extends AppCompatActivity {
             if (id == 901) {
 
                 condition = "Stormy";
+                iconToSendToShowcaseActivity = Constants.CLOUD_LIGHTNING_ICON;
+                descriptionToSendToShowcaseActivity = "stormy";
+                setPaletteFromWeather(WeatherKind.CLOUDY);
 
 
             }
@@ -602,12 +664,18 @@ public class MainActivity extends AppCompatActivity {
             if (id == 902) {
 
                 condition = "Hurricane";
+                descriptionToSendToShowcaseActivity = "hurricane";
+                iconToSendToShowcaseActivity = Constants.TORNADO_ICON;
+                setPaletteFromWeather(WeatherKind.CLOUDY);
+
 
             }
 
             if (id == 903) {
 
                 condition = "Cold";
+                descriptionToSendToShowcaseActivity = "cold";
+                iconToSendToShowcaseActivity = Constants.COLD_ICON;
 
             }
 
@@ -615,6 +683,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                 condition = "Hot";
+                descriptionToSendToShowcaseActivity = "hot";
+                iconToSendToShowcaseActivity = Constants.HOT_ICON;
                 setPaletteFromWeather(WeatherKind.HOT);
 
             }
@@ -624,6 +694,8 @@ public class MainActivity extends AppCompatActivity {
 
                 condition = "Windy";
                 isWindy = true;
+                descriptionToSendToShowcaseActivity = "windy";
+                iconToSendToShowcaseActivity = Constants.WIND_ICON;
                 sps.getEditor().putBoolean(Constants.IS_WINDY, true).apply();
 
             }
@@ -633,6 +705,8 @@ public class MainActivity extends AppCompatActivity {
 
                 condition = "Icy";
                 mWeatherKind = WeatherKind.SNOWY;
+                descriptionToSendToShowcaseActivity = "icy";
+                iconToSendToShowcaseActivity = Constants.COLD_ICON;
 
                 setPaletteFromWeather(WeatherKind.SNOWY);
 
@@ -736,23 +810,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void startRegularUpdates() {
 
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
+    public Intent returnShowcaseIntent() {
 
         Intent intent = new Intent(this, IconShowcaseActivity.class);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.putExtra(Constants.ICON_TO_SHOW, iconToSendToShowcaseActivity);
+        intent.putExtra(Constants.DESC_TO_SHOW, descriptionToSendToShowcaseActivity);
+
+        Log.e("DESC = ", descriptionToSendToShowcaseActivity);
+        Log.e("ICON = ", iconToSendToShowcaseActivity + "");
+        sps.getEditor().putString(Constants.DESC_TO_SHOW, descriptionToSendToShowcaseActivity).apply();
+        sps.getEditor().putInt(Constants.ICON_TO_SHOW, iconToSendToShowcaseActivity).apply();
 
         overridePendingTransition(0, 0);
 
-        pendingIntent = PendingIntent.getActivity(this, REFRESH_PENDING_INTENT_REQUEST_CODE, intent, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + TIME_TO_REFRESH, pendingIntent);
-
+        return intent;
     }
-
 
 }

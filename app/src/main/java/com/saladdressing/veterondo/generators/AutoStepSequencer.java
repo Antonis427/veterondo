@@ -7,6 +7,7 @@ public class AutoStepSequencer {
 
     }
 
+    // TODO: add code for creating longer compositions
 
 
 }
