@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
 
         handler.removeCallbacks(myRunnable);
         adapter.removeHandlerCallbacks();
-        timingTask.cancel(true);
+     //   timingTask.cancel(true);
 
         overridePendingTransition(0, 0);
 

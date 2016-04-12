@@ -8,8 +8,8 @@ android {
         applicationId "com.saladdressing.veterondo"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 7
-        versionName "1.45"
+        versionCode 8
+        versionName "1.451"
     }
     buildTypes {
         release {
