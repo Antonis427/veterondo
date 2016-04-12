@@ -56,8 +56,11 @@ import retrofit.client.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Time that it takes for MainActivity to launch IconShowcaseActivity
     public static final long TIME_TO_REFRESH = 5 * 60 * 1000;
+
     private static final Handler handler = new Handler();
+
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
@@ -123,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
         float scaleFactor = getResources().getDisplayMetrics().heightPixels / 40 * 2;
 
+
+        /*
+        The following three if-statements change the color of the expanded circle overlay according
+        to the color chosen in IntroActivity when tapping one of the three circles.
+         */
         if (sps.getPrefs().getString(Constants.DOT_CHOSEN_INTRO, "").equalsIgnoreCase("Y")) {
             wraps.setImageResource(R.drawable.circle_yellow);
 
@@ -145,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         Typeface titleTypeface = Typeface.createFromAsset(getAssets(), "fonts/Ailerons-Typeface.otf");
         Typeface scriptTypeface = Typeface.createFromAsset(getAssets(), "fonts/RobotoSlab-Light.ttf");
 
+        // make logo multi-colored
         SpannableString span = new SpannableString("::::::::veterondo");
         span.setSpan(new ForegroundColorSpan(Color.parseColor("#F44336")), 9, 10, 0);
         span.setSpan(new ForegroundColorSpan(Color.parseColor("#9C27B0")), 10, 11, 0);
@@ -166,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
         adapter = new GridDotAdapter(this, dots);
        // grid.setAdapter(adapter);
 
+        // change colored dots to the funky palette when a dot is clicked and play
+        // random chord
         final AdapterView.OnItemClickListener dotListener = new AdapterView.OnItemClickListener() {
 
             @Override
@@ -214,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
         retrieveWeather();
 
 
+        // changes color of dots in adapter within a certain palette
         timingTask = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -274,6 +286,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
 
         handler.removeCallbacks(myRunnable);
+
+        // remove handler callbacks in GridDotAdapter
         adapter.removeHandlerCallbacks();
      //   timingTask.cancel(true);
 
@@ -285,6 +299,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         handler.removeCallbacks(myRunnable);
+
+        // remove handler callbacks in GridDotAdapter
         adapter.removeHandlerCallbacks();
         super.onDestroy();
 
@@ -320,6 +336,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+            // when in doubt, travel to the center of the globe.
             if (location == null) {
                 latlon.add(0.0);
                 latlon.add(0.0);
@@ -387,6 +404,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // IconShowcaseActivity will be launching every TIME_TO_REFRESH minutes
     private void scheduleShowcaseActivityLaunch() {
         Handler handler = new Handler();
 
@@ -822,6 +840,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // create the Intent object for launching IconShowcaseActivity with updated info
     public Intent returnShowcaseIntent() {
 
         Intent intent = new Intent(this, IconShowcaseActivity.class);

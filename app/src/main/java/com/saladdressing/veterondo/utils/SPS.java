@@ -13,7 +13,10 @@ public class SPS {
     Context context;
 
     /**
-     * SPS is a SharedPreferences wrapper for less boilerplate
+     * SPS is a SharedPreferences wrapper for less boilerplate.
+     *
+     * I think that I actually managed to INCREASE boilerplate using this class
+     * but at least I'm feeling smart. For now.
      *
      * @param context
      */

@@ -24,6 +24,8 @@ import com.saladdressing.veterondo.pojos.Weather;
 import com.saladdressing.veterondo.utils.Constants;
 import com.saladdressing.veterondo.utils.SPS;
 
+
+// IntroActivity shows a short tutorial
 public class IntroActivity extends AppCompatActivity {
 
     TextView greeting;
@@ -61,7 +63,11 @@ public class IntroActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+                // let MainActivity know that it's following IntroActivity to
+                // show colored overlay that contracts and reveals content
                 intent.putExtra(Constants.FROM_INTRO, true);
+
                 startActivity(intent);
                 overridePendingTransition(0,0);
 
@@ -224,6 +230,13 @@ public class IntroActivity extends AppCompatActivity {
     }
 
 
+    /**
+     *
+     * @param view View that will have the animation applied to
+     * @param startDelay Sets the start delay for the animation, in milliseconds
+     * @param scaleFactor Combined scaleX and scaleY scale factor
+     * @param contract If set to true, after the expansion animation, a contraction phase follows
+     */
     private void createDropAndExpandAnimation(final View view, final long startDelay, final float scaleFactor, final boolean contract) {
 
         view.setVisibility(View.VISIBLE);

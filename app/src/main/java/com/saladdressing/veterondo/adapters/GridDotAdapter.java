@@ -60,12 +60,22 @@ public class GridDotAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
 
+
+        /*
+        You will notice that the inflation of views if unconditional. HAVE MERCY ON MY SOUL!
+
+        Doesn't make sense for it to be conditional anyway, since all of the views in the GridView
+        will be visible on the screen at the same time.
+
+        Please someone correct me if I'm wrong!
+         */
         final View v = inflater.inflate(R.layout.dot_cell, parent, false);
 
         final ImageView dot = (ImageView) v.findViewById(R.id.dot_element);
 
         dot.setImageDrawable(tinter.setDrawableColor(mContext, dot, mDots.get(position).getColor()));
 
+        // Set animator type according to data sent from MainActivity
 
         if (sps.getPrefs().getBoolean(Constants.IS_RAINY, false)) {
             rainAnimator(dot);
@@ -89,18 +99,22 @@ public class GridDotAdapter extends BaseAdapter {
 
     }
 
+    // Give activity a way to remove Handler callbacks!
     public void removeHandlerCallbacks() {
         handler.removeCallbacksAndMessages(null);
     }
 
+    // When it rains
     public void rainAnimator(final ImageView iv) {
         handler.post(new MyRunnableThree(iv));
     }
 
+    // When it's windy
     public void windAnimator(final ImageView iv) {
         handler.post(new MyRunnableFour(iv));
     }
 
+    // When it's... anything else.
     public void dotPulseAnimator(final ImageView iv, final long expansion, final long contraction, final long pause) {
 
 
@@ -108,6 +122,7 @@ public class GridDotAdapter extends BaseAdapter {
 
     }
 
+    // Ditto.
     public void dotPulseAnimator2(final ImageView iv, final long expansion, final long contraction, final long pause) {
 
 

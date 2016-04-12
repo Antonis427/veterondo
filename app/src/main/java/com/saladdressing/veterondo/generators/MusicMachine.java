@@ -30,6 +30,10 @@ public class MusicMachine {
 
     }
 
+    /*
+    Returns an array of guitar tones. More sounds will be added soon, so expect vibraphoneTones(), rhodesTones() and
+    maybe even kazooTones() in the near future!
+     */
     public static Integer[] guitarNotes() {
 
         return new Integer[]{R.raw.c4, R.raw.cs4, R.raw.d4, R.raw.ds4, R.raw.e4, R.raw.f4, R.raw.fs4, R.raw.g4, R.raw.gs4, R.raw.a4,
@@ -40,6 +44,11 @@ public class MusicMachine {
     }
 
 
+    /**
+     *
+     * @param interval Time to pause between playback of notes in the arpeggio
+     * @param playbackCompletedListener In case you need to apply events at the start and end of playback
+     */
     public void playPattern(final long interval, final PlaybackListener playbackCompletedListener) {
 
         final SamplePlayer samplePlayer = new SamplePlayer(context);
@@ -77,6 +86,9 @@ public class MusicMachine {
     }
 
     @SuppressWarnings("unused")
+    /*
+    Overloaded playPattern method without the PlaybackListener callback.
+     */
     public void playPattern(final long interval) {
 
         final SamplePlayer samplePlayer = new SamplePlayer(context);

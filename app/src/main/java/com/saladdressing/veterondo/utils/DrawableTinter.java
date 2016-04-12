@@ -9,9 +9,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.util.Log;
 import android.widget.ImageView;
 
-/**
- * Created by sebas on 3/27/2016.
- */
+
 public class DrawableTinter {
 
     public DrawableTinter() {
@@ -19,10 +17,10 @@ public class DrawableTinter {
     }
 
     /**
-     * @param context
-     * @param imageView ImageView to be mutated and returned as a Drawable
-     * @param color
-     * @return a Drawable implementation that could be a ColorDrawable, a ShapeDrawable or a GradientDrawable
+     * @param context Context
+     * @param imageView ImageView to be received and returned as a Drawable
+     * @param color Desired color
+     * @return A Drawable implementation that could be a ColorDrawable, a ShapeDrawable or a GradientDrawable
      */
     public Drawable setDrawableColor(Context context, ImageView imageView, String color) {
 
