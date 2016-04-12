@@ -3,6 +3,7 @@ package com.saladdressing.veterondo.adapters;
 import android.animation.Animator;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,10 @@ public class GridDotAdapter extends BaseAdapter {
 
     }
 
+    public void removeHandlerCallbacks() {
+        handler.removeCallbacksAndMessages(null);
+    }
+
     public void rainAnimator(final ImageView iv) {
         handler.post(new MyRunnableThree(iv));
     }
@@ -125,6 +130,8 @@ public class GridDotAdapter extends BaseAdapter {
         }
 
         public void run() {
+
+            Log.i("Pulse Runnable ONE ", "running...");
 
             iv.animate().setListener(new Animator.AnimatorListener() {
                 @Override
@@ -172,6 +179,8 @@ public class GridDotAdapter extends BaseAdapter {
 
         public void run() {
 
+            Log.i("Pulse runnable TWO ", "running...");
+
             iv.animate().setListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -212,6 +221,8 @@ public class GridDotAdapter extends BaseAdapter {
         }
 
         public void run() {
+
+            Log.i("Runnable THREE ", "running...");
 
             Random random = new Random();
             iv.animate().setDuration(400).alpha(0.0f).setStartDelay(random.nextInt(4000)).scaleY(1.7f).translationY(100).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new Animator.AnimatorListener() {
@@ -255,6 +266,9 @@ public class GridDotAdapter extends BaseAdapter {
         }
 
         public void run() {
+
+            Log.i("Runnable FOUR ", "running...");
+
 
             Random random = new Random();
             iv.animate().setDuration(900).alpha(0.0f).setStartDelay(random.nextInt(800)).scaleY(1.0f).translationX(100).setInterpolator(new AccelerateDecelerateInterpolator()).setListener(new Animator.AnimatorListener() {

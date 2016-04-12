@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         adapter = new GridDotAdapter(this, dots);
-        grid.setAdapter(adapter);
+       // grid.setAdapter(adapter);
 
         final AdapterView.OnItemClickListener dotListener = new AdapterView.OnItemClickListener() {
 
@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
+                        Log.i("TIMING TASK ", "running...");
                         for (Dot dot : dots) {
                             dot.setColor(generateRandomColorFromPalette(weatherPalette));
                         }
@@ -235,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }, 0, 30000, TimeUnit.MILLISECONDS);
-
 
 
     }
@@ -263,11 +263,20 @@ public class MainActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
 
+
+    @Override
+    protected void onResume() {
+        grid.setAdapter(adapter);
+        super.onResume();
+    }
+
     @Override
     protected void onPause() {
+
         handler.removeCallbacks(myRunnable);
-        if (alarmManager != null && pendingIntent != null)
-            alarmManager.cancel(pendingIntent);
+        adapter.removeHandlerCallbacks();
+        timingTask.cancel(true);
+
         overridePendingTransition(0, 0);
 
         super.onPause();
@@ -275,6 +284,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        handler.removeCallbacks(myRunnable);
+        adapter.removeHandlerCallbacks();
         super.onDestroy();
 
     }
