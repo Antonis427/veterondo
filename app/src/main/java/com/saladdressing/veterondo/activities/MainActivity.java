@@ -19,6 +19,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     String descriptionToSendToShowcaseActivity = "nothing to see here";
     boolean fromIntro;
     ImageView wraps;
+    ImageView circle;
     AlarmManager alarmManager;
     PendingIntent pendingIntent;
     SamplePlayer samplePlayer;
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         keepScreenOn();
         initializeDots();
 
+        circle = (ImageView) findViewById(R.id.circle);
         wraps = (ImageView) findViewById(R.id.wraps);
         appTitle = (TextView) findViewById(R.id.app_name);
         grid = (GridView) findViewById(R.id.dot_grid);
@@ -127,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
         temp = (TextView) findViewById(R.id.temp);
 
         float scaleFactor = getResources().getDisplayMetrics().heightPixels / 40 * 2;
+        Handler handlerz = new Handler();
 
         temp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,12 +138,27 @@ public class MainActivity extends AppCompatActivity {
 
                 if (sps.getPrefs().getString(Constants.TEMP_UNIT, "celsius").equalsIgnoreCase("celsius")) {
                     sps.getEditor().putString(Constants.TEMP_UNIT, "fahrenheit").apply();
-                    temp.setText(classTempFahr+"°F");
+                    animateCircleOnTap();
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            temp.setText(classTempFahr + "°F");
+
+                        }
+                    }, 200);
                 }
 
                 else {
                     sps.getEditor().putString(Constants.TEMP_UNIT, "celsius").apply();
-                    temp.setText(classTempCelsius+"°C");
+                    animateCircleOnTap();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            temp.setText(classTempCelsius + "°C");
+
+                        }
+                    }, 200);
                 }
 
             }
@@ -405,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                     int intTemp = (int) temperature;
                     int intTempFahr = (int) temperatureFahr;
 
-                    classTempCelsius  = intTemp;
+                    classTempCelsius = intTemp;
                     classTempFahr = intTempFahr;
 
 
@@ -414,9 +433,7 @@ public class MainActivity extends AppCompatActivity {
                     if (sps.getPrefs().getString(Constants.TEMP_UNIT, "celsius").equalsIgnoreCase("celsius")) {
                         temp.setText(intTemp + "°C");
 
-                    }
-
-                    else {
+                    } else {
                         temp.setText(intTempFahr + "°F");
                     }
                     scheduleShowcaseActivityLaunch();
@@ -892,6 +909,18 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
 
         return intent;
+    }
+
+    public void animateCircleOnTap() {
+
+        circle.animate().setDuration(200).scaleX(0.0f).scaleY(0.0f).withEndAction(new Runnable() {
+
+            @Override
+            public void run() {
+                circle.animate().setStartDelay(10).scaleX(1.0f).scaleY(1.0f).setDuration(300).setInterpolator(new OvershootInterpolator()).start();
+            }
+        });
+
     }
 
 }
