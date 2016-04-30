@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final Handler handler = new Handler();
 
+    int classTempFahr = 0;
+    int classTempCelsius = 0;
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
@@ -125,6 +127,23 @@ public class MainActivity extends AppCompatActivity {
         temp = (TextView) findViewById(R.id.temp);
 
         float scaleFactor = getResources().getDisplayMetrics().heightPixels / 40 * 2;
+
+        temp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (sps.getPrefs().getString(Constants.TEMP_UNIT, "celsius").equalsIgnoreCase("celsius")) {
+                    sps.getEditor().putString(Constants.TEMP_UNIT, "fahrenheit").apply();
+                    temp.setText(classTempFahr+"°F");
+                }
+
+                else {
+                    sps.getEditor().putString(Constants.TEMP_UNIT, "celsius").apply();
+                    temp.setText(classTempCelsius+"°C");
+                }
+
+            }
+        });
 
 
         /*
@@ -381,11 +400,25 @@ public class MainActivity extends AppCompatActivity {
 
 
                     double temperature = Math.floor(Constants.kelvinToCelsius(openCurrentWeather.getMain().getTemp()));
+                    double temperatureFahr = Math.floor(Constants.kelvinToFarhenheit(openCurrentWeather.getMain().getTemp()));
+
                     int intTemp = (int) temperature;
+                    int intTempFahr = (int) temperatureFahr;
+
+                    classTempCelsius  = intTemp;
+                    classTempFahr = intTempFahr;
+
 
                     weatherDescription.setText(condition);
-                    temp.setText(intTemp + "°C");
 
+                    if (sps.getPrefs().getString(Constants.TEMP_UNIT, "celsius").equalsIgnoreCase("celsius")) {
+                        temp.setText(intTemp + "°C");
+
+                    }
+
+                    else {
+                        temp.setText(intTempFahr + "°F");
+                    }
                     scheduleShowcaseActivityLaunch();
 
                 }

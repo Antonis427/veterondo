@@ -11,6 +11,8 @@ public class Constants {
     public static final String DOT_CHOSEN_INTRO = "dotChosenIntro";
     public static final String FROM_INTRO = "fromIntro";
 
+    public static final String TEMP_UNIT = "tempUnit";
+
 
     public static final String ICON_TO_SHOW = "iconToShow";
     public static final String DESC_TO_SHOW = "descToShow";

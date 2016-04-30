@@ -49,6 +49,8 @@ public class IntroActivity extends AppCompatActivity {
 
         screenHeight = getResources().getDisplayMetrics().heightPixels;
 
+        sps.getEditor().putString(Constants.TEMP_UNIT, "celsius").apply();
+
         MusicMachine musicMachine = new MusicMachine(this, WeatherKind.SUNNY);
         musicMachine.playPattern(200);
 
