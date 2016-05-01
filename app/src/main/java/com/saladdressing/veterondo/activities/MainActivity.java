@@ -19,6 +19,7 @@ import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -61,14 +62,13 @@ public class MainActivity extends AppCompatActivity {
     public static final long TIME_TO_REFRESH = 5 * 60 * 1000;
 
     private static final Handler handler = new Handler();
-
-    int classTempFahr = 0;
-    int classTempCelsius = 0;
     private static final int MY_PERMISSION_REQ_CODE = 123;
     static GridView grid;
     static ArrayList<Dot> dots = new ArrayList<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor();
+    int classTempFahr = 0;
+    int classTempCelsius = 0;
     int iconToSendToShowcaseActivity = R.drawable.cloud_refresh;
     String descriptionToSendToShowcaseActivity = "nothing to see here";
     boolean fromIntro;
@@ -147,9 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                     }, 200);
-                }
-
-                else {
+                } else {
                     sps.getEditor().putString(Constants.TEMP_UNIT, "celsius").apply();
                     animateCircleOnTap();
                     handler.postDelayed(new Runnable() {
@@ -211,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         adapter = new GridDotAdapter(this, dots);
-       // grid.setAdapter(adapter);
+        // grid.setAdapter(adapter);
 
         // change colored dots to the funky palette when a dot is clicked and play
         // random chord
@@ -327,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
         // remove handler callbacks in GridDotAdapter
         adapter.removeHandlerCallbacks();
-     //   timingTask.cancel(true);
+        //   timingTask.cancel(true);
 
         overridePendingTransition(0, 0);
 
@@ -913,7 +911,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void animateCircleOnTap() {
 
-        circle.animate().setDuration(200).scaleX(0.0f).scaleY(0.0f).withEndAction(new Runnable() {
+        circle.animate().setDuration(200).scaleX(0.0f).scaleY(0.0f).setInterpolator(new AccelerateDecelerateInterpolator()).withEndAction(new Runnable() {
 
             @Override
             public void run() {
