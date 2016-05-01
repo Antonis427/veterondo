@@ -26,8 +26,8 @@
             android:theme="@style/FullscreenTheme" />
         <activity
             android:name=".activities.IntroActivity"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_intro"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
 
             <intent-filter>
@@ -35,6 +35,21 @@
 
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".services.Daydream"
+            android:exported="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="Veterondo Dreaming"
+            android:permission="android.permission.BIND_DREAM_SERVICE">
+
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+
+        </service>
     </application>
 
 </manifest>
