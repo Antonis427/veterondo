@@ -10,11 +10,11 @@ public class RestAdapterGenerator {
     }
 
     public static RestAdapter generateWithLog() {
-        return new RestAdapter.Builder().setEndpoint("http://api.openweathermap.org/").setLogLevel(RestAdapter.LogLevel.FULL).build();
+        return new RestAdapter.Builder().setEndpoint("https://api.openweathermap.org/").setLogLevel(RestAdapter.LogLevel.FULL).build();
     }
 
     public static RestAdapter generate() {
-        return new RestAdapter.Builder().setEndpoint("http://api.openweathermap.org/").build();
+        return new RestAdapter.Builder().setEndpoint("https://api.openweathermap.org/").build();
     }
 
 }
