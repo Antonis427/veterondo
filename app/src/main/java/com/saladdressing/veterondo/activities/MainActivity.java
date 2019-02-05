@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
             double lat = loc.get(0);
             double lon = loc.get(1);
 
-            RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint("http://api.openweathermap.org/").setLogLevel(RestAdapter.LogLevel.FULL).build();
+            RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint("https://api.openweathermap.org/").setLogLevel(RestAdapter.LogLevel.FULL).build();
             GetCurrentWeatherInterface weatherInterface = restAdapter.create(GetCurrentWeatherInterface.class);
 
 
